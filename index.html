@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Youth Circle of Calgary Society</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- AOS -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            saffron:   { DEFAULT: '#F47A2A', light: '#FEF0E6' },
+            forest:    { DEFAULT: '#1A6B4A', light: '#E8F5EE' },
+            sky:       { DEFAULT: '#2563EB', light: '#EFF6FF' },
+            ink:       '#111827',
+            mist:      '#F8F7F4',
+          },
+          fontFamily: {
+            display: ['Fraunces', 'serif'],
+            body:    ['DM Sans', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #F8F7F4; color: #111827; }
+
+    /* ── Glassmorphism nav ── */
+    .glass-nav {
+      background: rgba(248, 247, 244, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(17,24,39,0.06);
+    }
+
+    /* ── Hero grain overlay ── */
+    .hero-grain::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      border-radius: inherit;
+    }
+
+    /* ── Gradient blob ── */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    /* ── Program cards ── */
+    .program-card { transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s ease; }
+    .program-card:hover { transform: translateY(-8px); box-shadow: 0 24px 48px rgba(17,24,39,0.12); }
+    .program-card:hover .card-icon { transform: scale(1.15) rotate(-6deg); }
+    .card-icon { transition: transform 0.35s cubic-bezier(.22,1,.36,1); }
+
+    /* ── Pillar icons ── */
+    .pillar-icon { transition: transform 0.3s ease; }
+    .pillar-box:hover .pillar-icon { transform: translateY(-4px); }
+
+    /* ── Mobile menu ── */
+    #mobile-menu { transition: max-height 0.4s ease, opacity 0.3s ease; max-height: 0; opacity: 0; overflow: hidden; }
+    #mobile-menu.open { max-height: 400px; opacity: 1; }
+
+    /* ── Newsletter input focus ── */
+    .nl-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(244,122,42,0.3); }
+
+    /* ── Smooth scroll ── */
+    html { scroll-behavior: smooth; }
+
+    /* ── Active nav link ── */
+    .nav-link { position: relative; }
+    .nav-link::after {
+      content: '';
+      position: absolute; bottom: -2px; left: 0; width: 0; height: 2px;
+      background: #F47A2A;
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* ── Stats counter style ── */
+    .stat-num { font-family: 'Fraunces', serif; }
+
+    /* ── Image placeholder shimmer ── */
+    .img-placeholder {
+      background: linear-gradient(135deg, #dbeafe 0%, #bbf7d0 50%, #fed7aa 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .img-placeholder::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%);
+      animation: shimmer 2.2s infinite;
+    }
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    /* ── Section divider wave ── */
+    .wave-divider { line-height: 0; }
+
+    /* Scroll-triggered counter */
+    .counter-done { animation: popIn 0.6s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+
+<body class="antialiased">
+
+<!-- ═══════════════════════════════════════════
+     NAVIGATION
+════════════════════════════════════════════ -->
+<header id="navbar" class="glass-nav fixed top-0 left-0 right-0 z-50">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8 flex items-center justify-between h-16">
+
+    <!-- Logo -->
+    <a href="#home" class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl bg-saffron flex items-center justify-center shadow-sm">
+        <i class="fa-solid fa-circle-nodes text-white text-base"></i>
+      </div>
+      <span class="font-display font-bold text-ink text-lg leading-none">Youth Circle<br><span class="text-xs font-body font-medium text-gray-400 tracking-widest uppercase">of Calgary</span></span>
+    </a>
+
+    <!-- Desktop links -->
+    <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+      <a href="#about"    class="nav-link hover:text-ink transition-colors">About</a>
+      <a href="#programs" class="nav-link hover:text-ink transition-colors">Programs</a>
+      <a href="#impact"   class="nav-link hover:text-ink transition-colors">Impact</a>
+      <a href="#contact"  class="nav-link hover:text-ink transition-colors">Contact</a>
+    </nav>
+
+    <!-- CTA -->
+    <a href="#contact" class="hidden md:inline-flex items-center gap-2 bg-saffron text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:bg-orange-500 transition-colors shadow-sm">
+      <i class="fa-solid fa-hand-holding-heart text-xs"></i> Get Involved
+    </a>
+
+    <!-- Hamburger -->
+    <button id="hamburger" class="md:hidden text-gray-600 hover:text-ink transition-colors p-1" aria-label="Menu">
+      <i class="fa-solid fa-bars text-xl"></i>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu" class="md:hidden bg-white/95 border-t border-gray-100 px-5">
+    <nav class="flex flex-col gap-1 py-4 text-sm font-medium text-gray-600">
+      <a href="#about"    class="mobile-link py-2.5 px-3 rounded-lg hover:bg-mist hover:text-ink transition-colors">About</a>
+      <a href="#programs" class="mobile-link py-2.5 px-3 rounded-lg hover:bg-mist hover:text-ink transition-colors">Programs</a>
+      <a href="#impact"   class="mobile-link py-2.5 px-3 rounded-lg hover:bg-mist hover:text-ink transition-colors">Impact</a>
+      <a href="#contact"  class="mobile-link py-2.5 px-3 rounded-lg hover:bg-mist hover:text-ink transition-colors">Contact</a>
+      <a href="#contact"  class="mt-2 bg-saffron text-white py-3 px-3 rounded-xl text-center font-semibold hover:bg-orange-500 transition-colors">
+        <i class="fa-solid fa-hand-holding-heart mr-1.5"></i> Get Involved
+      </a>
+    </nav>
+  </div>
+</header>
+
+
+<!-- ═══════════════════════════════════════════
+     HERO
+════════════════════════════════════════════ -->
+<section id="home" class="relative pt-16 min-h-screen flex items-center overflow-hidden">
+
+  <!-- Background blobs -->
+  <div class="blob w-96 h-96 bg-saffron top-10 -left-32"></div>
+  <div class="blob w-80 h-80 bg-forest top-1/2 right-0"></div>
+  <div class="blob w-64 h-64 bg-sky bottom-10 left-1/3"></div>
+
+  <div class="relative max-w-7xl mx-auto px-5 sm:px-8 w-full py-16 grid md:grid-cols-2 gap-12 items-center">
+
+    <!-- Left: Text -->
+    <div>
+      <div data-aos="fade-up" data-aos-delay="0"
+           class="inline-flex items-center gap-2 bg-forest/10 text-forest text-xs font-semibold px-4 py-2 rounded-full mb-6 border border-forest/20">
+        <i class="fa-solid fa-location-dot"></i> Calgary, Alberta
+      </div>
+
+      <h1 data-aos="fade-up" data-aos-delay="80"
+          class="font-display text-5xl sm:text-6xl lg:text-7xl font-black text-ink leading-[1.05] mb-6">
+        Empowering<br>
+        <span class="italic text-saffron">Calgary's</span><br>
+        Youth to Lead<br>&amp; Inspire.
+      </h1>
+
+      <p data-aos="fade-up" data-aos-delay="160"
+         class="text-gray-500 text-lg leading-relaxed max-w-md mb-10">
+        We connect young people across Calgary with mentors, education, and community programs that ignite confidence and build lifelong leaders.
+      </p>
+
+      <div data-aos="fade-up" data-aos-delay="240" class="flex flex-wrap gap-4">
+        <a href="#programs"
+           class="inline-flex items-center gap-2 bg-ink text-white font-semibold px-6 py-3.5 rounded-xl hover:bg-gray-800 transition-colors shadow-md">
+          Explore Programs <i class="fa-solid fa-arrow-right text-sm"></i>
+        </a>
+        <a href="#about"
+           class="inline-flex items-center gap-2 bg-white text-ink font-semibold px-6 py-3.5 rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all">
+          Our Story <i class="fa-regular fa-circle-play text-saffron text-sm"></i>
+        </a>
+      </div>
+
+      <!-- Social proof chips -->
+      <div data-aos="fade-up" data-aos-delay="320" class="flex flex-wrap gap-3 mt-10">
+        <div class="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100 text-sm text-gray-600">
+          <i class="fa-solid fa-users text-forest text-xs"></i> 500+ Youth Reached
+        </div>
+        <div class="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100 text-sm text-gray-600">
+          <i class="fa-solid fa-star text-saffron text-xs"></i> Est. in Calgary
+        </div>
+        <div class="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-sm border border-gray-100 text-sm text-gray-600">
+          <i class="fa-solid fa-heart text-red-400 text-xs"></i> Nonprofit & Free
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Image placeholder -->
+    <div data-aos="fade-left" data-aos-delay="100" class="relative">
+      <div class="hero-grain img-placeholder rounded-3xl aspect-[4/5] w-full shadow-2xl flex flex-col items-center justify-center gap-4">
+        <div class="w-20 h-20 rounded-2xl bg-white/50 flex items-center justify-center">
+          <i class="fa-regular fa-image text-4xl text-white/70"></i>
+        </div>
+        <p class="text-white/60 text-sm font-medium">Community Photo Here</p>
+        <p class="text-white/40 text-xs">Recommended: 800×1000px</p>
+      </div>
+
+      <!-- Floating badge -->
+      <div class="absolute -bottom-5 -left-5 bg-white rounded-2xl shadow-xl px-5 py-4 flex items-center gap-3 border border-gray-100">
+        <div class="w-10 h-10 rounded-xl bg-forest/10 flex items-center justify-center">
+          <i class="fa-solid fa-trophy text-forest"></i>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 font-medium">Community Impact</p>
+          <p class="text-sm font-bold text-ink">Changing Lives Daily</p>
+        </div>
+      </div>
+
+      <!-- Corner dot grid decoration -->
+      <div class="absolute -top-6 -right-6 grid grid-cols-5 gap-2 opacity-30">
+        <script>document.write(Array(25).fill('<div class="w-1.5 h-1.5 rounded-full bg-saffron"></div>').join(''))</script>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     ABOUT — PILLARS
+════════════════════════════════════════════ -->
+<section id="about" class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+
+    <!-- Header -->
+    <div class="text-center max-w-2xl mx-auto mb-16" data-aos="fade-up">
+      <span class="text-saffron font-semibold text-sm uppercase tracking-widest">Who We Are</span>
+      <h2 class="font-display text-4xl sm:text-5xl font-black text-ink mt-3 mb-5">
+        Built on Three <span class="italic">Pillars</span>
+      </h2>
+      <p class="text-gray-500 text-lg leading-relaxed">
+        Youth Circle of Calgary Society is a registered nonprofit dedicated to creating meaningful opportunities for young people aged 12–24 across our city.
+      </p>
+    </div>
+
+    <!-- Pillars grid -->
+    <div class="grid sm:grid-cols-3 gap-8">
+
+      <!-- Mentorship -->
+      <div class="pillar-box group bg-mist rounded-3xl p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="0">
+        <div class="pillar-icon w-16 h-16 mx-auto rounded-2xl bg-saffron/15 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-user-tie text-saffron text-2xl"></i>
+        </div>
+        <h3 class="font-display font-bold text-2xl text-ink mb-3">Mentorship</h3>
+        <p class="text-gray-500 leading-relaxed">
+          We pair youth with Calgary professionals and community leaders who invest time, wisdom, and encouragement into the next generation's growth.
+        </p>
+        <div class="mt-6 inline-flex items-center gap-1.5 text-saffron text-sm font-semibold group-hover:gap-3 transition-all">
+          Learn more <i class="fa-solid fa-arrow-right text-xs"></i>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="pillar-box group bg-forest/5 rounded-3xl p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="100">
+        <div class="pillar-icon w-16 h-16 mx-auto rounded-2xl bg-forest/15 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-graduation-cap text-forest text-2xl"></i>
+        </div>
+        <h3 class="font-display font-bold text-2xl text-ink mb-3">Education</h3>
+        <p class="text-gray-500 leading-relaxed">
+          From coding bootcamps to financial literacy workshops, we provide accessible learning experiences that prepare youth for a rapidly changing world.
+        </p>
+        <div class="mt-6 inline-flex items-center gap-1.5 text-forest text-sm font-semibold group-hover:gap-3 transition-all">
+          Learn more <i class="fa-solid fa-arrow-right text-xs"></i>
+        </div>
+      </div>
+
+      <!-- Community -->
+      <div class="pillar-box group bg-sky/5 rounded-3xl p-8 text-center hover:shadow-lg transition-shadow" data-aos="fade-up" data-aos-delay="200">
+        <div class="pillar-icon w-16 h-16 mx-auto rounded-2xl bg-sky/15 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-people-group text-sky text-2xl"></i>
+        </div>
+        <h3 class="font-display font-bold text-2xl text-ink mb-3">Community</h3>
+        <p class="text-gray-500 leading-relaxed">
+          We build safe, inclusive spaces where Calgary youth can express themselves, find belonging, and discover the power of collective action.
+        </p>
+        <div class="mt-6 inline-flex items-center gap-1.5 text-sky text-sm font-semibold group-hover:gap-3 transition-all">
+          Learn more <i class="fa-solid fa-arrow-right text-xs"></i>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     IMPACT STATS
+════════════════════════════════════════════ -->
+<section id="impact" class="py-20 bg-ink overflow-hidden relative">
+  <div class="blob w-80 h-80 bg-saffron top-0 right-0 opacity-10"></div>
+  <div class="blob w-64 h-64 bg-forest bottom-0 left-0 opacity-10"></div>
+
+  <div class="relative max-w-7xl mx-auto px-5 sm:px-8">
+    <div class="text-center mb-14" data-aos="fade-up">
+      <span class="text-saffron font-semibold text-sm uppercase tracking-widest">Our Impact</span>
+      <h2 class="font-display text-4xl sm:text-5xl font-black text-white mt-3">
+        Numbers That <span class="italic text-saffron">Matter</span>
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div data-aos="fade-up" data-aos-delay="0"
+           class="bg-white/5 border border-white/10 rounded-3xl p-8 text-center hover:bg-white/8 transition-colors">
+        <div class="stat-num text-5xl font-black text-white mb-2">500<span class="text-saffron">+</span></div>
+        <p class="text-gray-400 text-sm font-medium">Youth Served Annually</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="80"
+           class="bg-white/5 border border-white/10 rounded-3xl p-8 text-center hover:bg-white/8 transition-colors">
+        <div class="stat-num text-5xl font-black text-white mb-2">40<span class="text-saffron">+</span></div>
+        <p class="text-gray-400 text-sm font-medium">Volunteer Mentors</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="160"
+           class="bg-white/5 border border-white/10 rounded-3xl p-8 text-center hover:bg-white/8 transition-colors">
+        <div class="stat-num text-5xl font-black text-white mb-2">12<span class="text-saffron">+</span></div>
+        <p class="text-gray-400 text-sm font-medium">Active Programs</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="240"
+           class="bg-white/5 border border-white/10 rounded-3xl p-8 text-center hover:bg-white/8 transition-colors">
+        <div class="stat-num text-5xl font-black text-white mb-2">100<span class="text-saffron">%</span></div>
+        <p class="text-gray-400 text-sm font-medium">Free to Participants</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     PROGRAMS
+════════════════════════════════════════════ -->
+<section id="programs" class="py-24 bg-mist">
+  <div class="max-w-7xl mx-auto px-5 sm:px-8">
+
+    <div class="text-center max-w-2xl mx-auto mb-16" data-aos="fade-up">
+      <span class="text-forest font-semibold text-sm uppercase tracking-widest">What We Offer</span>
+      <h2 class="font-display text-4xl sm:text-5xl font-black text-ink mt-3 mb-5">
+        Our <span class="italic">Programs</span>
+      </h2>
+      <p class="text-gray-500 text-lg leading-relaxed">
+        Hands-on, youth-led programming designed to develop real skills and real confidence.
+      </p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+
+      <!-- Card 1 -->
+      <div class="program-card bg-white rounded-3xl p-7 shadow-sm border border-gray-100 cursor-default" data-aos="fade-up" data-aos-delay="0">
+        <div class="card-icon w-14 h-14 rounded-2xl bg-saffron/10 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-laptop-code text-saffron text-xl"></i>
+        </div>
+        <span class="text-xs font-bold uppercase tracking-widest text-saffron bg-saffron/10 px-3 py-1 rounded-full">Technology</span>
+        <h3 class="font-display font-bold text-xl text-ink mt-4 mb-3">Tech Launchpad</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">
+          Beginner-friendly coding, web design, and app-building workshops led by Calgary tech professionals. Ages 14–22.
+        </p>
+        <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-4">
+          <span><i class="fa-regular fa-calendar mr-1"></i> Saturdays · 10am–1pm</span>
+          <span class="text-forest font-semibold">Free</span>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="program-card bg-white rounded-3xl p-7 shadow-sm border border-gray-100 cursor-default" data-aos="fade-up" data-aos-delay="80">
+        <div class="card-icon w-14 h-14 rounded-2xl bg-forest/10 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-microphone-lines text-forest text-xl"></i>
+        </div>
+        <span class="text-xs font-bold uppercase tracking-widest text-forest bg-forest/10 px-3 py-1 rounded-full">Leadership</span>
+        <h3 class="font-display font-bold text-xl text-ink mt-4 mb-3">Voices of Tomorrow</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">
+          Public speaking, advocacy, and civic engagement training that prepares youth to lead in their schools and communities.
+        </p>
+        <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-4">
+          <span><i class="fa-regular fa-calendar mr-1"></i> Wednesdays · 5–7pm</span>
+          <span class="text-forest font-semibold">Free</span>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="program-card bg-white rounded-3xl p-7 shadow-sm border border-gray-100 cursor-default" data-aos="fade-up" data-aos-delay="160">
+        <div class="card-icon w-14 h-14 rounded-2xl bg-sky/10 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-piggy-bank text-sky text-xl"></i>
+        </div>
+        <span class="text-xs font-bold uppercase tracking-widest text-sky bg-sky/10 px-3 py-1 rounded-full">Finance</span>
+        <h3 class="font-display font-bold text-xl text-ink mt-4 mb-3">Money Smart Youth</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">
+          Practical financial literacy — budgeting, saving, credit, and entrepreneurship — taught by local finance experts.
+        </p>
+        <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-4">
+          <span><i class="fa-regular fa-calendar mr-1"></i> Bi-weekly · Sundays</span>
+          <span class="text-forest font-semibold">Free</span>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="program-card bg-white rounded-3xl p-7 shadow-sm border border-gray-100 cursor-default" data-aos="fade-up" data-aos-delay="0">
+        <div class="card-icon w-14 h-14 rounded-2xl bg-pink-50 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-palette text-pink-500 text-xl"></i>
+        </div>
+        <span class="text-xs font-bold uppercase tracking-widest text-pink-500 bg-pink-50 px-3 py-1 rounded-full">Arts</span>
+        <h3 class="font-display font-bold text-xl text-ink mt-4 mb-3">Create YYC</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">
+          Visual arts, photography, and digital media workshops where young creatives can tell their stories and find their voice.
+        </p>
+        <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-4">
+          <span><i class="fa-regular fa-calendar mr-1"></i> Thursdays · 4–6pm</span>
+          <span class="text-forest font-semibold">Free</span>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="program-card bg-white rounded-3xl p-7 shadow-sm border border-gray-100 cursor-default" data-aos="fade-up" data-aos-delay="80">
+        <div class="card-icon w-14 h-14 rounded-2xl bg-violet-50 flex items-center justify-center mb-6">
+          <i class="fa-solid fa-brain text-violet-500 text-xl"></i>
+        </div>
+        <span class="text-xs font-bold uppercase tracking-widest text-violet-500 bg-violet-50 px-3 py-1 rounded-full">Wellness</span>
+        <h3 class="font-display font-bold text-xl text-ink mt-4 mb-3">Mind Matters</h3>
+        <p class="text-gray-500 text-sm leading-relaxed mb-5">
+          Mental health literacy, stress management, and peer support circles facilitated by trained youth counsellors and social workers.
+        </p>
+        <div class="flex items-center justify-between text-xs text-gray-400 border-t border-gray-100 pt-4">
+          <span><i class="fa-regular fa-calendar mr-1"></i> Flexible · Drop-in</span>
+          <span class="text-forest font-semibold">Free</span>
+        </div>
+      </div>
+
+      <!-- Card 6 – CTA -->
+      <div class="program-card bg-saffron rounded-3xl p-7 cursor-default flex flex-col justify-between" data-aos="fade-up" data-aos-delay="160">
+        <div>
+          <div class="card-icon w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-6">
+            <i class="fa-solid fa-circle-plus text-white text-xl"></i>
+          </div>
+          <h3 class="font-display font-bold text-xl text-white mb-3">More Coming Soon</h3>
+          <p class="text-white/80 text-sm leading-relaxed">
+            We're always growing. Got an idea for a program or want to volunteer your skills? We'd love to hear from you.
+          </p>
+        </div>
+        <a href="#contact"
+           class="mt-8 inline-flex items-center justify-center gap-2 bg-white text-saffron font-semibold text-sm px-5 py-3 rounded-xl hover:bg-orange-50 transition-colors">
+          Get Involved <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     TESTIMONIAL / QUOTE BANNER
+════════════════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-4xl mx-auto px-5 sm:px-8 text-center" data-aos="fade-up">
+    <div class="text-6xl text-saffron font-display leading-none mb-6">"</div>
+    <blockquote class="font-display text-2xl sm:text-3xl font-bold text-ink leading-snug mb-8">
+      Youth Circle gave me my first mentor, my first stage, and my first sense of belonging in Calgary. Today I lead workshops here myself.
+    </blockquote>
+    <div class="flex items-center justify-center gap-4">
+      <div class="w-12 h-12 rounded-full img-placeholder border-2 border-saffron/30 flex items-center justify-center">
+        <i class="fa-regular fa-user text-white/50 text-sm"></i>
+      </div>
+      <div class="text-left">
+        <p class="font-semibold text-ink text-sm">Program Alumna</p>
+        <p class="text-gray-400 text-xs">Youth Circle Graduate · Calgary, AB</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+     FOOTER / CONTACT
+════════════════════════════════════════════ -->
+<footer id="contact" class="bg-ink text-white">
+
+  <!-- Newsletter bar -->
+  <div class="border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 py-14 grid md:grid-cols-2 gap-10 items-center">
+      <div data-aos="fade-right">
+        <h3 class="font-display text-3xl font-black mb-2">Stay in the <span class="italic text-saffron">Loop</span></h3>
+        <p class="text-gray-400 text-sm">Monthly updates on programs, events, and impact stories from our community.</p>
+      </div>
+      <div data-aos="fade-left">
+        <form onsubmit="handleNewsletter(event)" class="flex flex-col sm:flex-row gap-3">
+          <input id="nl-email" type="email" placeholder="Your email address"
+                 class="nl-input flex-1 bg-white/8 border border-white/15 rounded-xl px-4 py-3.5 text-sm text-white placeholder-gray-500 focus:border-saffron/60 transition-colors"/>
+          <button type="submit"
+                  class="bg-saffron hover:bg-orange-500 text-white font-semibold text-sm px-6 py-3.5 rounded-xl transition-colors whitespace-nowrap flex items-center gap-2 justify-center">
+            <i class="fa-solid fa-paper-plane text-xs"></i> Subscribe
+          </button>
+        </form>
+        <p id="nl-msg" class="text-green-400 text-xs mt-2 hidden">
+          <i class="fa-solid fa-circle-check mr-1"></i> Thanks! We'll be in touch.
+        </p>
+        <p class="text-gray-600 text-xs mt-2">No spam, ever. Unsubscribe anytime.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer grid -->
+  <div class="max-w-7xl mx-auto px-5 sm:px-8 py-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+
+    <!-- Brand -->
+    <div class="lg:col-span-1">
+      <div class="flex items-center gap-2.5 mb-5">
+        <div class="w-9 h-9 rounded-xl bg-saffron flex items-center justify-center">
+          <i class="fa-solid fa-circle-nodes text-white text-base"></i>
+        </div>
+        <span class="font-display font-bold text-white text-lg leading-none">Youth Circle<br><span class="text-xs font-body font-medium text-gray-500 tracking-widest uppercase">of Calgary</span></span>
+      </div>
+      <p class="text-gray-500 text-sm leading-relaxed mb-6">
+        A registered nonprofit empowering young people across Calgary through mentorship, education, and community.
+      </p>
+      <div class="flex gap-3">
+        <a href="#" aria-label="Instagram" class="w-9 h-9 rounded-xl bg-white/8 hover:bg-saffron flex items-center justify-center transition-colors">
+          <i class="fa-brands fa-instagram text-sm"></i>
+        </a>
+        <a href="#" aria-label="Facebook" class="w-9 h-9 rounded-xl bg-white/8 hover:bg-saffron flex items-center justify-center transition-colors">
+          <i class="fa-brands fa-facebook-f text-sm"></i>
+        </a>
+        <a href="#" aria-label="X / Twitter" class="w-9 h-9 rounded-xl bg-white/8 hover:bg-saffron flex items-center justify-center transition-colors">
+          <i class="fa-brands fa-x-twitter text-sm"></i>
+        </a>
+        <a href="#" aria-label="LinkedIn" class="w-9 h-9 rounded-xl bg-white/8 hover:bg-saffron flex items-center justify-center transition-colors">
+          <i class="fa-brands fa-linkedin-in text-sm"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Programs -->
+    <div>
+      <h4 class="text-white font-semibold text-sm mb-5">Programs</h4>
+      <ul class="space-y-3 text-gray-500 text-sm">
+        <li><a href="#programs" class="hover:text-white transition-colors">Tech Launchpad</a></li>
+        <li><a href="#programs" class="hover:text-white transition-colors">Voices of Tomorrow</a></li>
+        <li><a href="#programs" class="hover:text-white transition-colors">Money Smart Youth</a></li>
+        <li><a href="#programs" class="hover:text-white transition-colors">Create YYC</a></li>
+        <li><a href="#programs" class="hover:text-white transition-colors">Mind Matters</a></li>
+      </ul>
+    </div>
+
+    <!-- Organization -->
+    <div>
+      <h4 class="text-white font-semibold text-sm mb-5">Organization</h4>
+      <ul class="space-y-3 text-gray-500 text-sm">
+        <li><a href="#about" class="hover:text-white transition-colors">About Us</a></li>
+        <li><a href="#impact" class="hover:text-white transition-colors">Our Impact</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Meet the Team</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Volunteer</a></li>
+        <li><a href="#" class="hover:text-white transition-colors">Donate</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact info -->
+    <div>
+      <h4 class="text-white font-semibold text-sm mb-5">Contact</h4>
+      <ul class="space-y-4 text-gray-500 text-sm">
+        <li class="flex items-start gap-3">
+          <i class="fa-solid fa-location-dot text-saffron mt-0.5"></i>
+          <span>Calgary, Alberta<br>Canada</span>
+        </li>
+        <li class="flex items-center gap-3">
+          <i class="fa-solid fa-envelope text-saffron"></i>
+          <a href="mailto:info@youthcirclecalgary.ca" class="hover:text-white transition-colors">info@youthcirclecalgary.ca</a>
+        </li>
+        <li class="flex items-center gap-3">
+          <i class="fa-solid fa-phone text-saffron"></i>
+          <a href="tel:+14031234567" class="hover:text-white transition-colors">(403) 123-4567</a>
+        </li>
+      </ul>
+
+      <a href="mailto:info@youthcirclecalgary.ca"
+         class="mt-7 inline-flex items-center gap-2 bg-saffron hover:bg-orange-500 text-white text-sm font-semibold px-5 py-3 rounded-xl transition-colors">
+        <i class="fa-solid fa-envelope text-xs"></i> Send us a message
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="border-t border-white/8 py-6">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-600">
+      <p>&copy; <span id="year"></span> Youth Circle of Calgary Society. All rights reserved. Registered Nonprofit.</p>
+      <div class="flex gap-5">
+        <a href="#" class="hover:text-gray-400 transition-colors">Privacy Policy</a>
+        <a href="#" class="hover:text-gray-400 transition-colors">Terms of Use</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════
+     SCRIPTS
+════════════════════════════════════════════ -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+  // Init AOS
+  AOS.init({ duration: 700, once: true, offset: 60, easing: 'ease-out-cubic' });
+
+  // Year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Hamburger
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+    const icon = hamburger.querySelector('i');
+    icon.classList.toggle('fa-bars');
+    icon.classList.toggle('fa-xmark');
+  });
+  document.querySelectorAll('.mobile-link').forEach(link =>
+    link.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      hamburger.querySelector('i').classList.replace('fa-xmark','fa-bars');
+    })
+  );
+
+  // Newsletter
+  function handleNewsletter(e) {
+    e.preventDefault();
+    const msg = document.getElementById('nl-msg');
+    msg.classList.remove('hidden');
+    document.getElementById('nl-email').value = '';
+    setTimeout(() => msg.classList.add('hidden'), 5000);
+  }
+
+  // Dot grid generation (fallback for no-script)
+  document.querySelectorAll('.dot-grid').forEach(g => {
+    for (let i = 0; i < 25; i++) {
+      const d = document.createElement('div');
+      d.className = 'w-1.5 h-1.5 rounded-full bg-saffron';
+      g.appendChild(d);
+    }
+  });
+</script>
+
+</body>
+</html>
